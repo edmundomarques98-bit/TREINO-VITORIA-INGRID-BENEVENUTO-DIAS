@@ -19,7 +19,22 @@ button,input{font:inherit}button{cursor:pointer}.hero{min-height:480px;position:
 .footer{text-align:center;color:var(--muted);font-size:.78rem;padding:28px 14px 42px}.progressbar{height:9px;background:#e0d6ca;border-radius:99px;overflow:hidden;margin-top:8px}.progressbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#b48a64);transition:.25s}.save-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120px);background:#1f1b17;color:white;padding:12px 16px;border-radius:999px;font-weight:800;font-size:.82rem;z-index:9;transition:.25s;box-shadow:var(--shadow)}.save-toast.show{transform:translateX(-50%) translateY(0)}
 .rest-timer{position:fixed;right:18px;bottom:18px;z-index:8;width:min(330px,calc(100vw - 36px));background:rgba(31,27,23,.97);color:#fff;border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:14px;box-shadow:0 18px 55px rgba(20,15,10,.28);backdrop-filter:blur(12px)}.rest-timer.minimized{width:auto;padding:10px 12px}.rest-timer.minimized .timer-body,.rest-timer.minimized .timer-label{display:none}.timer-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.timer-title{display:flex;align-items:center;gap:9px;font-weight:900}.timer-dot{width:10px;height:10px;border-radius:50%;background:#aab687;box-shadow:0 0 0 5px rgba(170,182,135,.12)}.timer-label{font-size:.72rem;color:rgba(255,255,255,.62);margin-top:2px}.timer-toggle{border:0;background:rgba(255,255,255,.08);color:#fff;border-radius:10px;width:34px;height:34px;font-weight:900}.timer-time{font-variant-numeric:tabular-nums;font-size:2.5rem;line-height:1;font-weight:900;letter-spacing:-.04em;margin:14px 0 10px}.timer-body{display:block}.timer-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.timer-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:#fff;border-radius:12px;padding:9px 11px;font-weight:800}.timer-btn.primary{background:#e9efe0;color:#2f3820;border-color:#e9efe0}.timer-btn.danger{color:#ffc4c9}.timer-adjust{display:flex;align-items:center;gap:8px;margin-top:10px}.timer-adjust button{border:1px solid rgba(255,255,255,.14);background:transparent;color:#fff;border-radius:10px;width:38px;height:36px;font-weight:900}.timer-adjust input{width:74px;background:#fff;color:#231c17;border:0;border-radius:10px;padding:8px;text-align:center;font-weight:900}.timer-adjust span{font-size:.74rem;color:rgba(255,255,255,.65)}.timer-sound{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}.sound-btn{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.09);color:#fff;border-radius:12px;padding:9px 11px;font-weight:850}.sound-btn.on{background:#dfeacb;color:#253018;border-color:#dfeacb}.sound-status{font-size:.72rem;color:rgba(255,255,255,.66)}.rest-timer.running .timer-dot{background:#d7e59f;animation:pulse 1s infinite}.rest-timer.done .timer-dot{background:#ff9ba5}.rest-timer.done{animation:finishPulse .7s 2}@keyframes pulse{50%{transform:scale(.65);opacity:.5}}@keyframes finishPulse{50%{transform:translateY(-3px)}}
 @media(min-width:800px){.hero{min-height:580px}.summary{grid-template-columns:repeat(3,220px);justify-content:start}.exercise{padding:21px 22px}.sets{grid-template-columns:repeat(2,1fr)}.day-head{padding:30px}.wrap{width:min(1040px,calc(100% - 48px))}}
-@media(max-width:520px){.summary{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.hero{min-height:500px}.set{grid-template-columns:auto 1fr 102px}.kg input{width:64px}}
+@media(max-width:520px){
+.summary{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.hero{min-height:500px}.set{grid-template-columns:auto 1fr 102px}.kg input{width:64px}
+.rest-timer{left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));width:auto;max-height:72dvh;overflow-y:auto;z-index:99999;border-radius:18px;padding:12px}
+.rest-timer.minimized{left:8px;right:8px;width:auto}
+.rest-timer.minimized .timer-body{display:block}
+.rest-timer.minimized .timer-label{display:block}
+.timer-toggle{display:none}
+.timer-sound{margin-top:8px;margin-bottom:8px;display:block}
+.sound-btn{display:block;width:100%;font-size:.95rem;padding:12px 10px;background:#f4f8ec;color:#243016;border-color:#f4f8ec}
+.sound-btn.on{background:#dfeacb;color:#243016}
+.sound-status{display:block;margin-top:6px;text-align:center;font-size:.7rem}
+.timer-time{text-align:center;font-size:2.2rem;margin:10px 0 8px}
+.timer-row{justify-content:center}
+.timer-adjust{justify-content:center}
+.timer-adjust span{flex-basis:100%;text-align:center}
+}
 </style>
 </head>
 <body>
@@ -33,10 +48,14 @@ button,input{font:inherit}button{cursor:pointer}.hero{min-height:480px;position:
 <footer class="footer">Treino de Vitória Ingrid Benevenuto Dias • As cargas iniciais são referências para teste e devem respeitar técnica, controle e percepção de esforço.</footer>
 <div class="rest-timer" id="restTimer" aria-live="polite">
   <div class="timer-head">
-    <div><div class="timer-title"><span class="timer-dot"></span>Descanso entre séries</div><div class="timer-label">Inicia automaticamente ao concluir uma série • alerta sonoro ao finalizar</div></div>
+    <div><div class="timer-title"><span class="timer-dot"></span>Descanso entre séries</div><div class="timer-label">Inicia automaticamente ao concluir uma série • alerta sonoro ao finalizar • versão mobile 2</div></div>
     <button class="timer-toggle" id="timerToggle" aria-label="Minimizar cronômetro">−</button>
   </div>
   <div class="timer-body">
+    <div class="timer-sound">
+      <button class="sound-btn" id="soundEnable">🔊 Ativar / testar som</button>
+      <span class="sound-status" id="soundStatus">Toque uma vez para liberar o áudio do navegador</span>
+    </div>
     <div class="timer-time" id="timerTime">00:30</div>
     <div class="timer-row">
       <button class="timer-btn primary" id="timerStart">Iniciar</button>
@@ -48,10 +67,6 @@ button,input{font:inherit}button{cursor:pointer}.hero{min-height:480px;position:
       <input id="timerSeconds" type="number" inputmode="numeric" min="5" max="300" step="5" value="30" aria-label="Tempo de descanso em segundos">
       <button id="timerPlus" aria-label="Aumentar 5 segundos">+5</button>
       <span>segundos • ajustável de 5 a 300</span>
-    </div>
-    <div class="timer-sound">
-      <button class="sound-btn" id="soundEnable">🔊 Ativar / testar som</button>
-      <span class="sound-status" id="soundStatus">Toque uma vez para liberar o áudio do navegador</span>
     </div>
   </div>
 </div>
